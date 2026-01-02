@@ -6,6 +6,7 @@ import com.example.loopa.dto.request.LoginRequest;
 import com.example.loopa.dto.response.LoginResponse;
 import com.example.loopa.dto.response.UserResponse;
 import com.example.loopa.entity.User;
+import com.example.loopa.entity.enums.Category;
 import com.example.loopa.entity.enums.Role;
 import com.example.loopa.exception.DataNotFoundException;
 import com.example.loopa.repository.UserRepository;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -38,6 +40,23 @@ public class UserService {
         response.setNewUser(isNewUser);
 
         return ApiResponse.success(null, response);
+    }
+
+    public ApiResponse<String> setInterests(User user, List<String> interests) {
+        List<Category> categories = interests.stream()
+                .map(interest -> {
+                    try {
+                        return Category.valueOf(interest.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        throw new RuntimeException("Kategoriya topilmadi: " + interest);
+                    }
+                })
+                .toList();
+
+        user.setFavouriteCategories(categories);
+        userRepository.save(user);
+
+        return ApiResponse.success("Hammasi tayyor", null);
     }
 
     public ApiResponse<String> makeSeller(String chatId){
