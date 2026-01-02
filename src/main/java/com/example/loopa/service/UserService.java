@@ -27,17 +27,15 @@ public class UserService {
     private final JwtProvider jwtProvider;
 
     public ApiResponse<LoginResponse> login(LoginRequest request) {
-        Optional<User> optionalUser = userRepository.findById(request.getChatId());
-        boolean isNewUser = optionalUser.isEmpty();
-
-        User user = optionalUser.orElseGet(() -> createUser(request));
+        User user = userRepository.findById(request.getChatId())
+                .orElseGet(() -> createUser(request));
 
         String token = jwtProvider.generateToken(user.getChatId());
 
         LoginResponse response = new LoginResponse();
         response.setToken(token);
         response.setRole(user.getRole().name());
-        response.setNewUser(isNewUser);
+        response.setNewUser(user.isNewUser());
 
         return ApiResponse.success(null, response);
     }
@@ -54,6 +52,7 @@ public class UserService {
                 .toList();
 
         user.setFavouriteCategories(categories);
+        user.setNewUser(false);
         userRepository.save(user);
 
         return ApiResponse.success("Hammasi tayyor", null);

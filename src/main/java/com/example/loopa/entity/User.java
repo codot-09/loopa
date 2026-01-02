@@ -28,6 +28,8 @@ public class User implements UserDetails {
 
     private String username;
 
+    private boolean newUser = true;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
