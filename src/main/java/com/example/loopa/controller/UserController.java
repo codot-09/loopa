@@ -8,6 +8,7 @@ import com.example.loopa.dto.response.UserResponse;
 import com.example.loopa.entity.User;
 import com.example.loopa.entity.enums.Role;
 import com.example.loopa.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/login")
+    @Operation(security = {})
     public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest request){
         return ResponseEntity.ok(userService.login(request));
     }
