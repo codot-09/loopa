@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,17 +27,15 @@ public class UserService {
     private final JwtProvider jwtProvider;
 
     public ApiResponse<LoginResponse> login(LoginRequest request) {
-        Optional<User> optionalUser = userRepository.findById(request.getChatId());
-        boolean isNewUser = optionalUser.isEmpty();
-
-        User user = optionalUser.orElseGet(() -> createUser(request));
+        User user = userRepository.findById(request.getChatId())
+                .orElseGet(() -> createUser(request));
 
         String token = jwtProvider.generateToken(user.getChatId());
 
         LoginResponse response = LoginResponse.builder()
                 .token(token)
                 .role(user.getRole().name())
-                .newUser(isNewUser)
+                .newUser(user.isNewUser())
                 .build();
 
         return ApiResponse.success(null, response);
@@ -57,11 +54,13 @@ public class UserService {
                 .toList();
 
         user.setFavouriteCategories(categories);
+        user.setNewUser(false);
         userRepository.save(user);
 
         return ApiResponse.success("Hammasi tayyor", null);
     }
 
+    @Transactional
     public ApiResponse<String> makeSeller(String chatId) {
         User user = userRepository.findById(chatId)
                 .orElseThrow(() -> new DataNotFoundException("Foydalanuvchi topilmadi"));
@@ -69,13 +68,14 @@ public class UserService {
         user.setRole(Role.SELLER);
         userRepository.save(user);
 
-        return ApiResponse.success("Foydalanuvchi endi sotuvchi");
+        return ApiResponse.success("O'zgarishlar saqlandi", null);
     }
 
     public ApiResponse<UserResponse> getById(String chatId) {
-        return userRepository.findById(chatId)
-                .map(user -> ApiResponse.success((String) null, mapToResponse(user)))
+        User user = userRepository.findById(chatId)
                 .orElseThrow(() -> new DataNotFoundException("Foydalanuvchi topilmadi"));
+
+        return ApiResponse.success(null, mapToResponse(user));
     }
 
     public ApiResponse<PageableRes<UserResponse>> getUsers(Role role, Pageable pageable) {
@@ -86,13 +86,13 @@ public class UserService {
     }
 
     private User createUser(LoginRequest request) {
-        User user = User.builder()
+        return userRepository.save(User.builder()
                 .chatId(request.getChatId())
                 .username(request.getUsername())
                 .role(Role.CLIENT)
+                .newUser(true)
                 .isBlocked(false)
-                .build();
-        return userRepository.save(user);
+                .build());
     }
 
     private UserResponse mapToResponse(User user) {

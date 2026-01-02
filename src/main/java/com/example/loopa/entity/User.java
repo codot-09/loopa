@@ -43,10 +43,7 @@ public class User implements UserDetails {
     private boolean isBlocked = false;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(
-            name = "user_favourite_categories",
-            joinColumns = @JoinColumn(name = "user_chat_id")
-    )
+    @CollectionTable(name = "user_favourite_categories", joinColumns = @JoinColumn(name = "user_chat_id"))
     @Column(name = "category")
     @Enumerated(EnumType.STRING)
     private List<Category> favouriteCategories;
@@ -56,10 +53,21 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
-    @Override public String getPassword() { return null; }
-    @Override public String getUsername() { return chatId; }
-    @Override public boolean isAccountNonExpired() { return true; }
-    @Override public boolean isAccountNonLocked() { return !isBlocked; }
-    @Override public boolean isCredentialsNonExpired() { return true; }
-    @Override public boolean isEnabled() { return true; }
+    @Override
+    public String getPassword() { return null; }
+
+    @Override
+    public String getUsername() { return chatId; }
+
+    @Override
+    public boolean isAccountNonExpired() { return true; }
+
+    @Override
+    public boolean isAccountNonLocked() { return !isBlocked; }
+
+    @Override
+    public boolean isCredentialsNonExpired() { return true; }
+
+    @Override
+    public boolean isEnabled() { return true; }
 }
