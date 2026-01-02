@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -22,17 +24,20 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
 
-    public ApiResponse<LoginResponse> login(LoginRequest request){
-        User user = userRepository.findById(request.getChatId())
-                .orElseGet(() -> createUser(request));
+    public ApiResponse<LoginResponse> login(LoginRequest request) {
+        Optional<User> optionalUser = userRepository.findById(request.getChatId());
+        boolean isNewUser = optionalUser.isEmpty();
+
+        User user = optionalUser.orElseGet(() -> createUser(request));
 
         String token = jwtProvider.generateToken(user.getChatId());
 
         LoginResponse response = new LoginResponse();
         response.setToken(token);
         response.setRole(user.getRole().name());
+        response.setNewUser(isNewUser);
 
-        return ApiResponse.success(null,response);
+        return ApiResponse.success(null, response);
     }
 
     public ApiResponse<String> makeSeller(String chatId){

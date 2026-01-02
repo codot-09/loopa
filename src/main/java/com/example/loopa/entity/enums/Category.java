@@ -6,5 +6,6 @@ public enum Category {
     CLOTHES,
     TOYS,
     SPORT_INSTRUMENTS,
-    BEAUTY
+    BEAUTY,
+    HOME
 }
