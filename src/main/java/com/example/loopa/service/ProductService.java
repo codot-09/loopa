@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -68,6 +70,22 @@ public class ProductService {
                 .map(this::mapToViewResponse);
 
         return ApiResponse.success(null, PageableRes.fromPage(products));
+    }
+
+    public ApiResponse<PageableRes<ProductViewResponse>> getForUser(User user, Pageable pageable) {
+        List<Category> userInterests = user.getFavouriteCategories();
+
+        Page<ProductViewResponse> productPage;
+
+        if (userInterests == null || userInterests.isEmpty()) {
+            productPage = productRepository.findAllByDeletedFalse(pageable)
+                    .map(this::mapToViewResponse);
+        } else {
+            productPage = productRepository.findAllByCategoryInAndDeletedFalseOrderByCreatedAtDesc(userInterests, pageable)
+                    .map(this::mapToViewResponse);
+        }
+
+        return ApiResponse.success(null, PageableRes.fromPage(productPage));
     }
 
     private ProductViewResponse mapToViewResponse(Product product){
