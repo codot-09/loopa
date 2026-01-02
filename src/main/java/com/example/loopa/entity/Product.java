@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -49,10 +48,15 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private DeliveryType deliveryType;
 
+    private long recommendedCount;
+    private long totalVotes;
+
     @ElementCollection
     @CollectionTable(name = "product_medias", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "media_url")
     private List<String> medias;
+
+    private boolean deleted;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
