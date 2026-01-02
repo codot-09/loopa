@@ -41,6 +41,21 @@ public class UserService {
         return ApiResponse.success(null, response);
     }
 
+    public ApiResponse<LoginResponse> adminLogin(String id){
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Foydalanuvchi topilmadi"));
+
+        String token = jwtProvider.generateToken(user.getChatId());
+
+        LoginResponse response = LoginResponse.builder()
+                .token(token)
+                .role(user.getRole().name())
+                .newUser(false)
+                .build();
+
+        return ApiResponse.success(null, response);
+    }
+
     @Transactional
     public ApiResponse<String> setInterests(User user, List<String> interests) {
         List<Category> categories = interests.stream()

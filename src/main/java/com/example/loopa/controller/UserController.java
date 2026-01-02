@@ -31,6 +31,12 @@ public class UserController {
         return ResponseEntity.ok(userService.login(request));
     }
 
+    @PostMapping("/admin-login")
+    @Operation(security = {})
+    public ResponseEntity<ApiResponse<LoginResponse>> adminLogin(@RequestParam String id){
+        return ResponseEntity.ok(userService.adminLogin(id));
+    }
+
     @PatchMapping("/make-seller")
     public ResponseEntity<ApiResponse<String>> makeSeller(@RequestParam String chatId){
         return ResponseEntity.ok(userService.makeSeller(chatId));
