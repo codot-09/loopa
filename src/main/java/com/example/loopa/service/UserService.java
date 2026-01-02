@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,52 +28,54 @@ public class UserService {
     private final JwtProvider jwtProvider;
 
     public ApiResponse<LoginResponse> login(LoginRequest request) {
-        User user = userRepository.findById(request.getChatId())
-                .orElseGet(() -> createUser(request));
+        Optional<User> optionalUser = userRepository.findById(request.getChatId());
+        boolean isNewUser = optionalUser.isEmpty();
+
+        User user = optionalUser.orElseGet(() -> createUser(request));
 
         String token = jwtProvider.generateToken(user.getChatId());
 
-        LoginResponse response = new LoginResponse();
-        response.setToken(token);
-        response.setRole(user.getRole().name());
-        response.setNewUser(user.isNewUser());
+        LoginResponse response = LoginResponse.builder()
+                .token(token)
+                .role(user.getRole().name())
+                .newUser(isNewUser)
+                .build();
 
         return ApiResponse.success(null, response);
     }
 
+    @Transactional
     public ApiResponse<String> setInterests(User user, List<String> interests) {
         List<Category> categories = interests.stream()
                 .map(interest -> {
                     try {
                         return Category.valueOf(interest.toUpperCase());
                     } catch (IllegalArgumentException e) {
-                        throw new RuntimeException("Kategoriya topilmadi: " + interest);
+                        throw new DataNotFoundException("Kategoriya topilmadi: " + interest);
                     }
                 })
                 .toList();
 
         user.setFavouriteCategories(categories);
-        user.setNewUser(false);
         userRepository.save(user);
 
         return ApiResponse.success("Hammasi tayyor", null);
     }
 
-    public ApiResponse<String> makeSeller(String chatId){
+    public ApiResponse<String> makeSeller(String chatId) {
         User user = userRepository.findById(chatId)
                 .orElseThrow(() -> new DataNotFoundException("Foydalanuvchi topilmadi"));
 
         user.setRole(Role.SELLER);
         userRepository.save(user);
 
-        return ApiResponse.success("O'zgarishlar saqlandi");
+        return ApiResponse.success("Foydalanuvchi endi sotuvchi");
     }
 
-    public ApiResponse<UserResponse> getById(String chatId){
-        User user = userRepository.findById(chatId)
+    public ApiResponse<UserResponse> getById(String chatId) {
+        return userRepository.findById(chatId)
+                .map(user -> ApiResponse.success((String) null, mapToResponse(user)))
                 .orElseThrow(() -> new DataNotFoundException("Foydalanuvchi topilmadi"));
-
-        return ApiResponse.success(null,mapToResponse(user));
     }
 
     public ApiResponse<PageableRes<UserResponse>> getUsers(Role role, Pageable pageable) {
@@ -82,17 +85,17 @@ public class UserService {
         return ApiResponse.success(null, PageableRes.fromPage(userResponsePage));
     }
 
-    private User createUser(LoginRequest request){
-
-        return userRepository.save(User.builder()
+    private User createUser(LoginRequest request) {
+        User user = User.builder()
                 .chatId(request.getChatId())
                 .username(request.getUsername())
                 .role(Role.CLIENT)
                 .isBlocked(false)
-                .build());
+                .build();
+        return userRepository.save(user);
     }
 
-    private UserResponse mapToResponse(User user){
+    private UserResponse mapToResponse(User user) {
         return new UserResponse(
                 user.getChatId(),
                 user.getUsername(),
