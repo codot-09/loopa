@@ -19,15 +19,17 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     @Query("""
         SELECT p FROM Product p
-        WHERE (:category IS NULL OR p.category = :category)
-          AND p.price >= :minPrice
-          AND p.price <= :maxPrice
-          AND p.deleted = false
+        WHERE p.deleted = false
+          AND (:query IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%')))
+          AND (:category IS NULL OR p.category = :category)
+          AND (:minPrice IS NULL OR p.price >= :minPrice)
+          AND (:maxPrice IS NULL OR p.price <= :maxPrice)
         """)
     Page<Product> search(
+            @Param("query") String query,
             @Param("category") Category category,
-            @Param("minPrice") double minPrice,
-            @Param("maxPrice") double maxPrice,
+            @Param("minPrice") Double minPrice,
+            @Param("maxPrice") Double maxPrice,
             Pageable pageable
     );
 

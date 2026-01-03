@@ -81,6 +81,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ApiResponse<PageableRes<ProductViewResponse>> searchProducts(
+            String query,
             Category category,
             Double minPrice,
             Double maxPrice,
@@ -90,7 +91,7 @@ public class ProductService {
         double max = maxPrice != null ? maxPrice : Double.MAX_VALUE;
 
         Page<ProductViewResponse> products = productRepository
-                .search(category, min, max, pageable)
+                .search(query,category, min, max, pageable)
                 .map(this::mapToViewResponse);
 
         return ApiResponse.success(null, PageableRes.fromPage(products));

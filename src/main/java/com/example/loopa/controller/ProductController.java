@@ -40,6 +40,7 @@ public class ProductController {
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<PageableRes<ProductViewResponse>>> searchProducts(
+            @RequestParam(required = false) String query,
             @RequestParam(required = false) Category category,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
@@ -48,7 +49,7 @@ public class ProductController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(
-                productService.searchProducts(category, minPrice, maxPrice, pageable)
+                productService.searchProducts(query,category, minPrice, maxPrice, pageable)
         );
     }
 
