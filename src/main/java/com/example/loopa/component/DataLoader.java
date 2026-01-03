@@ -4,10 +4,12 @@ import com.example.loopa.entity.User;
 import com.example.loopa.entity.enums.Role;
 import com.example.loopa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
@@ -31,5 +33,6 @@ public class DataLoader implements CommandLineRunner {
 
             userRepository.save(admin);
         }
+        log.info("Admin yaratildi");
     }
 }
