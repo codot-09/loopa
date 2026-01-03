@@ -27,4 +27,5 @@ public class ProductResponse {
     private List<String> medias;
     private LocalDateTime createdAt;
     private double recommendedPrecent;
+    private boolean isFavourite;
 }

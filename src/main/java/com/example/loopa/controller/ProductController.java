@@ -69,7 +69,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ProductResponse>> getById(@PathVariable UUID id){
-        return ResponseEntity.ok(productService.getById(id));
+    public ResponseEntity<ApiResponse<ProductResponse>> getById(@AuthenticationPrincipal User user,@PathVariable UUID id){
+        return ResponseEntity.ok(productService.getById(user,id));
     }
 }

@@ -31,6 +31,7 @@ public class ProductService {
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
     private final LocationService locationService;
+    private final FavouriteService favouriteService;
 
     public ApiResponse<String> createProduct(User seller,ProductCreateRequest request){
 
@@ -55,11 +56,11 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ApiResponse<ProductResponse> getById(UUID id){
+    public ApiResponse<ProductResponse> getById(User user,UUID id){
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Mahsulot topilmadi"));
 
-        return ApiResponse.success(null,mapToResponse(product));
+        return ApiResponse.success(null,mapToResponse(user,product));
     }
 
     @Transactional(readOnly = true)
@@ -116,7 +117,7 @@ public class ProductService {
         return ApiResponse.success(null, PageableRes.fromPage(productPage));
     }
 
-    private ProductViewResponse mapToViewResponse(Product product){
+    public ProductViewResponse mapToViewResponse(Product product){
         return ProductViewResponse.builder()
                 .id(product.getId())
                 .name(product.getName())
@@ -126,7 +127,7 @@ public class ProductService {
                 .build();
     }
 
-    private ProductResponse mapToResponse(Product product){
+    private ProductResponse mapToResponse(User user,Product product){
         return ProductResponse.builder()
                 .name(product.getName())
                 .description(product.getDescription())
@@ -139,6 +140,7 @@ public class ProductService {
                 .medias(product.getMedias())
                 .createdAt(product.getCreatedAt())
                 .recommendedPrecent(calculateRecommendedPercent(product.getTotalVotes(),product.getRecommendedCount()))
+                .isFavourite(favouriteService.isProductFavourite(user,product))
                 .build();
     }
 
