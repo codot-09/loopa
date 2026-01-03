@@ -11,6 +11,7 @@ import com.example.loopa.entity.Product;
 import com.example.loopa.entity.User;
 import com.example.loopa.entity.enums.Category;
 import com.example.loopa.exception.DataNotFoundException;
+import com.example.loopa.repository.FavouritesRepository;
 import com.example.loopa.repository.LocationRepository;
 import com.example.loopa.repository.ProductRepository;
 import com.example.loopa.repository.UserRepository;
@@ -31,7 +32,7 @@ public class ProductService {
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
     private final LocationService locationService;
-    private final FavouriteService favouriteService;
+    private final FavouritesRepository favouritesRepository;
 
     public ApiResponse<String> createProduct(User seller,ProductCreateRequest request){
 
@@ -140,7 +141,7 @@ public class ProductService {
                 .medias(product.getMedias())
                 .createdAt(product.getCreatedAt())
                 .recommendedPrecent(calculateRecommendedPercent(product.getTotalVotes(),product.getRecommendedCount()))
-                .isFavourite(favouriteService.isProductFavourite(user,product))
+                .isFavourite(favouritesRepository.existsByUserAndProduct(user,product))
                 .build();
     }
 
