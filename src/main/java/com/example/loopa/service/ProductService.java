@@ -50,6 +50,12 @@ public class ProductService {
         return ApiResponse.success("Mahsulot chop etildi");
     }
 
+    public ApiResponse<List<ProductViewResponse>> getSellerProducts(User seller){
+        List<Product> products = productRepository.findAllBySeller(seller);
+
+        return ApiResponse.success(null,products.stream().map(this::mapToViewResponse).toList());
+    }
+
     public ApiResponse<String> deleteProduct(UUID id){
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Mahsulot topilmadi"));

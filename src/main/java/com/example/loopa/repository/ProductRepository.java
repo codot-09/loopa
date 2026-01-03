@@ -1,6 +1,7 @@
 package com.example.loopa.repository;
 
 import com.example.loopa.entity.Product;
+import com.example.loopa.entity.User;
 import com.example.loopa.entity.enums.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             @Param("maxPrice") Double maxPrice,
             Pageable pageable
     );
+
+    List<Product> findAllBySeller(User seller);
 
     Page<Product> findAllByCategoryInAndDeletedFalseOrderByCreatedAtDesc(List<Category> categories, Pageable pageable);
     Page<Product> findAllByDeletedFalse(Pageable pageable);

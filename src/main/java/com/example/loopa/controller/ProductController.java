@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -56,5 +57,10 @@ public class ProductController {
     ){
         Pageable pageable = PageRequest.of(page,size);
         return ResponseEntity.ok(productService.getForUser(user,pageable));
+    }
+
+    @GetMapping("/my-products")
+    public ResponseEntity<ApiResponse<List<ProductViewResponse>>> getSellerProducts(@AuthenticationPrincipal User seller){
+        return ResponseEntity.ok(productService.getSellerProducts(seller));
     }
 }
