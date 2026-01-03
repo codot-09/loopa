@@ -51,7 +51,7 @@ public class ProductService {
     }
 
     public ApiResponse<List<ProductViewResponse>> getSellerProducts(User seller){
-        List<Product> products = productRepository.findAllBySeller(seller);
+        List<Product> products = productRepository.findBySeller(seller);
 
         return ApiResponse.success(null,products.stream().map(this::mapToViewResponse).toList());
     }

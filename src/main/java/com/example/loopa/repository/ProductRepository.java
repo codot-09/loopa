@@ -28,7 +28,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             Pageable pageable
     );
 
-    List<Product> findAllBySeller(User seller);
+    List<Product> findBySeller(User seller);
 
     Page<Product> findAllByCategoryInAndDeletedFalseOrderByCreatedAtDesc(List<Category> categories, Pageable pageable);
     Page<Product> findAllByDeletedFalse(Pageable pageable);
