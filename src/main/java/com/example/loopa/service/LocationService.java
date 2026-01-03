@@ -47,7 +47,7 @@ public class LocationService {
         return ApiResponse.success("Joylashuv malumotlari o'chirildi");
     }
 
-    private LocationResponse mapToResponse(Location location){
+    public LocationResponse mapToResponse(Location location){
         return LocationResponse.builder()
                 .id(location.getId())
                 .lat(location.getLatitude())
