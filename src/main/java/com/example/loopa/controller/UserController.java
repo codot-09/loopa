@@ -57,7 +57,7 @@ public class UserController {
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<PageableRes<UserResponse>>> getUsers(
-            @RequestParam Role role,
+            @RequestParam(required = false) Role role,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ){
