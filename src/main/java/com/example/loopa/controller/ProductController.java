@@ -3,6 +3,7 @@ package com.example.loopa.controller;
 import com.example.loopa.dto.ApiResponse;
 import com.example.loopa.dto.PageableRes;
 import com.example.loopa.dto.request.ProductCreateRequest;
+import com.example.loopa.dto.response.ProductResponse;
 import com.example.loopa.dto.response.ProductViewResponse;
 import com.example.loopa.entity.User;
 import com.example.loopa.entity.enums.Category;
@@ -64,5 +65,10 @@ public class ProductController {
     @GetMapping("/my-products")
     public ResponseEntity<ApiResponse<List<ProductViewResponse>>> getSellerProducts(@AuthenticationPrincipal User seller){
         return ResponseEntity.ok(productService.getSellerProducts(seller));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<ProductResponse>> getById(@PathVariable UUID id){
+        return ResponseEntity.ok(productService.getById(id));
     }
 }
