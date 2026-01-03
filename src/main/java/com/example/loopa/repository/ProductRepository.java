@@ -16,15 +16,17 @@ import java.util.UUID;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
 
-    @Query("SELECT p FROM Product p WHERE " +
-            "(:category IS NULL OR p.category = :category) AND " +
-            "(:minPrice IS NULL OR p.price >= :minPrice) AND " +
-            "(:maxPrice IS NULL OR p.price <= :maxPrice) AND " +
-            "(p.deleted = false)")
+    @Query("""
+        SELECT p FROM Product p
+        WHERE (:category IS NULL OR p.category = :category)
+          AND p.price >= :minPrice
+          AND p.price <= :maxPrice
+          AND p.deleted = false
+        """)
     Page<Product> search(
             @Param("category") Category category,
-            @Param("minPrice") Double minPrice,
-            @Param("maxPrice") Double maxPrice,
+            @Param("minPrice") double minPrice,
+            @Param("maxPrice") double maxPrice,
             Pageable pageable
     );
 

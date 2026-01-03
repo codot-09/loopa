@@ -44,9 +44,11 @@ public class ProductController {
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
-    ){
-        Pageable pageable = PageRequest.of(page,size);
-        return ResponseEntity.ok(productService.searchProducts(category,minPrice,maxPrice,pageable));
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(
+                productService.searchProducts(category, minPrice, maxPrice, pageable)
+        );
     }
 
     @GetMapping("/for-user")

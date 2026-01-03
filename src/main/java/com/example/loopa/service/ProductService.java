@@ -13,6 +13,7 @@ import com.example.loopa.entity.enums.PriceType;
 import com.example.loopa.exception.DataNotFoundException;
 import com.example.loopa.repository.LocationRepository;
 import com.example.loopa.repository.ProductRepository;
+import com.example.loopa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final LocationRepository locationRepository;
+    private final UserRepository userRepository;
 
     public ApiResponse<String> createProduct(User seller,ProductCreateRequest request){
 
@@ -68,26 +70,33 @@ public class ProductService {
 
     public ApiResponse<PageableRes<ProductViewResponse>> searchProducts(
             Category category,
-            double minPrice,
-            double maxPrice,
+            Double minPrice,
+            Double maxPrice,
             Pageable pageable
-    ){
-        Page<ProductViewResponse> products = productRepository.search(category,minPrice,maxPrice,pageable)
+    ) {
+        double min = minPrice != null ? minPrice : 0.0;
+        double max = maxPrice != null ? maxPrice : Double.MAX_VALUE;
+
+        Page<ProductViewResponse> products = productRepository
+                .search(category, min, max, pageable)
                 .map(this::mapToViewResponse);
 
         return ApiResponse.success(null, PageableRes.fromPage(products));
     }
 
     public ApiResponse<PageableRes<ProductViewResponse>> getForUser(User user, Pageable pageable) {
-        List<Category> userInterests = user.getFavouriteCategories();
+
+        List<Category> userInterests = userRepository.findFavouriteCategories(user.getChatId());
 
         Page<ProductViewResponse> productPage;
 
-        if (userInterests == null || userInterests.isEmpty()) {
-            productPage = productRepository.findAllByDeletedFalse(pageable)
+        if (userInterests.isEmpty()) {
+            productPage = productRepository
+                    .findAllByDeletedFalse(pageable)
                     .map(this::mapToViewResponse);
         } else {
-            productPage = productRepository.findAllByCategoryInAndDeletedFalseOrderByCreatedAtDesc(userInterests, pageable)
+            productPage = productRepository
+                    .findAllByCategoryInAndDeletedFalseOrderByCreatedAtDesc(userInterests, pageable)
                     .map(this::mapToViewResponse);
         }
 
