@@ -1,6 +1,7 @@
 package com.example.loopa.service;
 
 import com.example.loopa.dto.ApiResponse;
+import com.example.loopa.dto.response.FavoriteResponse;
 import com.example.loopa.dto.response.ProductViewResponse;
 import com.example.loopa.entity.Favourites;
 import com.example.loopa.entity.Product;
@@ -41,18 +42,10 @@ public class FavouriteService {
         return ApiResponse.success("Mahsulot sevimlilarga qo'shildi");
     }
 
-    public boolean isProductFavourite(User user, Product product) {
-        return favouritesRepository.existsByUserAndProduct(user, product);
-    }
-
-    public ApiResponse<List<ProductViewResponse>> getFavourites(User user) {
+    public ApiResponse<List<FavoriteResponse>> getFavourites(User user) {
         List<Favourites> favourites = favouritesRepository.findByUser(user);
 
-        List<ProductViewResponse> response = favourites.stream()
-                .map(f -> productService.mapToViewResponse(f.getProduct()))
-                .toList();
-
-        return ApiResponse.success(null,response);
+        return ApiResponse.success(null,favourites.stream().map(this::mapToResponse).toList());
     }
 
     public ApiResponse<String> deleteFavourites(UUID id){
@@ -62,5 +55,12 @@ public class FavouriteService {
         favouritesRepository.delete(favourites);
 
         return ApiResponse.success("Sevimlilardan o'chirildi");
+    }
+
+    private FavoriteResponse mapToResponse(Favourites favourites){
+        return FavoriteResponse.builder()
+                .id(favourites.getId())
+                .product(productService.mapToViewResponse(favourites.getProduct()))
+                .build();
     }
 }

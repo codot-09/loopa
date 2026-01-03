@@ -1,6 +1,7 @@
 package com.example.loopa.controller;
 
 import com.example.loopa.dto.ApiResponse;
+import com.example.loopa.dto.response.FavoriteResponse;
 import com.example.loopa.dto.response.ProductViewResponse;
 import com.example.loopa.entity.User;
 import com.example.loopa.service.FavouriteService;
@@ -24,7 +25,7 @@ public class FavouriteController {
     }
 
     @GetMapping("/my")
-    public ResponseEntity<ApiResponse<List<ProductViewResponse>>> getFavourites(@AuthenticationPrincipal User user){
+    public ResponseEntity<ApiResponse<List<FavoriteResponse>>> getFavourites(@AuthenticationPrincipal User user){
         return ResponseEntity.ok(favouriteService.getFavourites(user));
     }
 
