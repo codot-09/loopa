@@ -7,5 +7,6 @@ public enum Category {
     TOYS,
     SPORT_INSTRUMENTS,
     BEAUTY,
-    HOME
+    HOME,
+    FOOD
 }
