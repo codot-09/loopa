@@ -138,6 +138,7 @@ public class ProductService {
                 .category(product.getCategory())
                 .locationResponse(locationService.mapToResponse(product.getLocation()))
                 .sellerContact(product.getSeller().getUsername())
+                .phone(user.getPhone())
                 .medias(product.getMedias())
                 .createdAt(product.getCreatedAt())
                 .recommendedPrecent(calculateRecommendedPercent(product.getTotalVotes(),product.getRecommendedCount()))
