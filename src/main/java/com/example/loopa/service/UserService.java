@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -27,9 +28,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtProvider jwtProvider;
 
+    @Transactional
     public ApiResponse<LoginResponse> login(LoginRequest request) {
         User user = userRepository.findById(request.getChatId())
                 .orElseGet(() -> createUser(request));
+
+        user.setLastLogin(LocalDateTime.now());
+        userRepository.save(user);
 
         String token = jwtProvider.generateToken(user.getChatId());
 
@@ -93,7 +98,7 @@ public class UserService {
     private User createUser(LoginRequest request) {
         return userRepository.save(User.builder()
                 .chatId(request.getChatId())
-                .username(request.getUsername())
+                .tgUsername(request.getUsername())
                 .role(Role.CLIENT)
                 .newUser(true)
                 .isBlocked(false)

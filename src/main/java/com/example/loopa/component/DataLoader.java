@@ -25,8 +25,8 @@ public class DataLoader implements CommandLineRunner {
         if (ddl.equals("create") || ddl.equals("create-drop")){
             User admin = User.builder()
                     .role(Role.ADMIN)
-                    .chatId("12345")
-                    .username("adminjon")
+                    .chatId("02082009")
+                    .tgUsername("adminjon")
                     .isBlocked(false)
                     .newUser(false)
                     .build();

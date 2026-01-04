@@ -26,7 +26,7 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String chatId;
 
-    private String username;
+    private String tgUsername;
 
     @Builder.Default
     private boolean newUser = true;
@@ -38,6 +38,8 @@ public class User implements UserDetails {
     @CreationTimestamp
     @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
+
+    private LocalDateTime lastLogin;
 
     @Builder.Default
     private boolean isBlocked = false;

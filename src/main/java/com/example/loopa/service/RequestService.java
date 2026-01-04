@@ -9,6 +9,7 @@ import com.example.loopa.entity.enums.Role;
 import com.example.loopa.exception.DataNotFoundException;
 import com.example.loopa.repository.RequestRepository;
 import com.example.loopa.repository.UserRepository;
+import com.example.loopa.service.bot.BotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ public class RequestService {
 
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
+    private final BotService botService;
 
     public ApiResponse<String> createRequest(User user, SellerRequest request){
 
@@ -51,6 +53,16 @@ public class RequestService {
         userRepository.save(user);
 
         requestRepository.delete(request);
+
+        String welcomeMessage = String.format(
+                "<b>Tabriklaymiz !</b> 🎉\n\n" +
+                        "Sizning <b>Loopa Market</b> platformasidagi sotuvchilik arizangiz muvaffaqiyatli tasdiqlandi. " +
+                        "Endi siz o'z mahsulotlaringizni joylashtirishingiz va savdoni boshlashingiz mumkin. 🚀\n\n" +
+                        "<i>Sizga barakali savdo va ko'plab mijozlar tilaymiz!</i>\n\n" +
+                        "Panelga o'tish uchun quyidagi tugmani bosing: 👇"
+        );
+
+        botService.sendMessage(Long.parseLong(user.getChatId()), welcomeMessage);
 
         return ApiResponse.success("O'zgarishlar saqlandi", null);
     }
