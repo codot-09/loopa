@@ -108,7 +108,7 @@ public class UserService {
     public UserResponse mapToResponse(User user) {
         return new UserResponse(
                 user.getChatId(),
-                user.getUsername(),
+                user.getTgUsername(),
                 user.getRole().name()
         );
     }
