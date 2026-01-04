@@ -3,6 +3,7 @@ package com.example.loopa.service;
 import com.example.loopa.dto.ApiResponse;
 import com.example.loopa.dto.PageableRes;
 import com.example.loopa.dto.request.LoginRequest;
+import com.example.loopa.dto.request.SellerRequest;
 import com.example.loopa.dto.response.LoginResponse;
 import com.example.loopa.dto.response.UserResponse;
 import com.example.loopa.entity.User;
@@ -75,17 +76,6 @@ public class UserService {
         return ApiResponse.success("Hammasi tayyor", null);
     }
 
-    @Transactional
-    public ApiResponse<String> makeSeller(String chatId) {
-        User user = userRepository.findById(chatId)
-                .orElseThrow(() -> new DataNotFoundException("Foydalanuvchi topilmadi"));
-
-        user.setRole(Role.SELLER);
-        userRepository.save(user);
-
-        return ApiResponse.success("O'zgarishlar saqlandi", null);
-    }
-
     public ApiResponse<UserResponse> getById(String chatId) {
         User user = userRepository.findById(chatId)
                 .orElseThrow(() -> new DataNotFoundException("Foydalanuvchi topilmadi"));
@@ -110,7 +100,7 @@ public class UserService {
                 .build());
     }
 
-    private UserResponse mapToResponse(User user) {
+    public UserResponse mapToResponse(User user) {
         return new UserResponse(
                 user.getChatId(),
                 user.getUsername(),

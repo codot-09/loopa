@@ -8,6 +8,7 @@ import com.example.loopa.dto.response.ProductViewResponse;
 import com.example.loopa.entity.User;
 import com.example.loopa.entity.enums.Category;
 import com.example.loopa.service.ProductService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
+@Tag(name = "Mahsulotlar",description = "Mahsulotlarni boshqarish")
 public class ProductController {
 
     private final ProductService productService;

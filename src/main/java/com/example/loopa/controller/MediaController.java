@@ -1,6 +1,7 @@
 package com.example.loopa.controller;
 
 import com.example.loopa.service.MediaService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/media")
 @RequiredArgsConstructor
+@Tag(name = "Media",description = "Rasm va video medialarni boshqarish")
 public class MediaController {
 
     private final MediaService mediaService;

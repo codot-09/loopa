@@ -6,6 +6,7 @@ import com.example.loopa.dto.request.LocationRequest;
 import com.example.loopa.dto.response.LocationResponse;
 import com.example.loopa.entity.User;
 import com.example.loopa.service.LocationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/location")
 @RequiredArgsConstructor
+@Tag(name = "Joylashuv",description = "Joylashuv malumotlarini boshqarish")
 public class LocationController {
 
     private final LocationService locationService;

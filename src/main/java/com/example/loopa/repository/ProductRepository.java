@@ -41,4 +41,17 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     Page<Product> findAllByCategoryInAndDeletedFalseOrderByCreatedAtDesc(List<Category> categories, Pageable pageable);
     Page<Product> findAllByDeletedFalse(Pageable pageable);
+
+    long countBySellerChatId(String sellerId);
+
+    @Query("SELECT p FROM Product p WHERE p.seller.chatId = :sellerId ORDER BY p.recommendedCount DESC")
+    List<Product> findTopProductsBySeller(@Param("sellerId") String sellerId, Pageable pageable);
+
+    @Query("SELECT DISTINCT p.category FROM Product p WHERE p.seller.chatId = :sellerId")
+    List<Category> findCategoriesBySellerId(@Param("sellerId") String sellerId);
+
+    long countByCategoryIn(List<Category> categories);
+
+    @Query("SELECT p.seller FROM Product p WHERE p.seller.role = 'SELLER' GROUP BY p.seller ORDER BY COUNT(p) DESC")
+    List<User> findTopSellers(Pageable pageable);
 }

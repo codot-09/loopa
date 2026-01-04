@@ -5,6 +5,7 @@ import com.example.loopa.dto.response.FavoriteResponse;
 import com.example.loopa.dto.response.ProductViewResponse;
 import com.example.loopa.entity.User;
 import com.example.loopa.service.FavouriteService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/favourite")
 @RequiredArgsConstructor
+@Tag(name = "Sevimlilar",description = "Sevimli mahsulotlarni boshqarish")
 public class FavouriteController {
 
     private final FavouriteService favouriteService;

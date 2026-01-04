@@ -9,6 +9,7 @@ import com.example.loopa.entity.User;
 import com.example.loopa.entity.enums.Role;
 import com.example.loopa.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Tag(name = "Foydalanuvchilar",description = "Foydalanuvchilarni boshqarish")
 public class UserController {
 
     private final UserService userService;
@@ -35,11 +37,6 @@ public class UserController {
     @Operation(security = {})
     public ResponseEntity<ApiResponse<LoginResponse>> adminLogin(@RequestParam String id){
         return ResponseEntity.ok(userService.adminLogin(id));
-    }
-
-    @PatchMapping("/make-seller")
-    public ResponseEntity<ApiResponse<String>> makeSeller(@RequestParam String chatId){
-        return ResponseEntity.ok(userService.makeSeller(chatId));
     }
 
     @GetMapping("/{chatOd}")

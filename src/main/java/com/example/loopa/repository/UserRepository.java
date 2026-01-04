@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -23,5 +24,11 @@ public interface UserRepository extends JpaRepository<User,String> {
         WHERE u.chatId = :userId
     """)
     List<Category> findFavouriteCategories(@Param("userId") String userId);
+
+    long countByRole(Role role);
+
+    long countByCreatedAtAfter(LocalDateTime dateTime);
+
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 
 }
