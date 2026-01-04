@@ -50,6 +50,7 @@ public class RequestService {
         User user = request.getSeller();
 
         user.setRole(Role.SELLER);
+        user.setPhone(request.getContact());
         userRepository.save(user);
 
         requestRepository.delete(request);

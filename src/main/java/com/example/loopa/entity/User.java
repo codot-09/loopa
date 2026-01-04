@@ -28,6 +28,8 @@ public class User implements UserDetails {
 
     private String tgUsername;
 
+    private String phone;
+
     @Builder.Default
     private boolean newUser = true;
 

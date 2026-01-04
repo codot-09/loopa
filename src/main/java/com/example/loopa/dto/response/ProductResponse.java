@@ -24,6 +24,7 @@ public class ProductResponse {
     private Category category;
     private LocationResponse locationResponse;
     private String sellerContact;
+    private String phone;
     private List<String> medias;
     private LocalDateTime createdAt;
     private double recommendedPrecent;
