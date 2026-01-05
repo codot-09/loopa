@@ -94,7 +94,7 @@ public class ProductService {
         double min = minPrice != null ? minPrice : 0.0;
         double max = maxPrice != null ? maxPrice : Double.MAX_VALUE;
 
-        Sort premiumSort = Sort.by(Sort.Direction.DESC, "seller.isPremium");
+        Sort premiumSort = Sort.by(Sort.Direction.DESC, "seller.premium");
         Pageable sortedPageable = PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
