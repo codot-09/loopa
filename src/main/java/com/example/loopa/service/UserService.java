@@ -42,6 +42,7 @@ public class UserService {
                 .token(token)
                 .role(user.getRole().name())
                 .newUser(user.isNewUser())
+                .premiumUser(user.isPremium())
                 .build();
 
         return ApiResponse.success(null, response);

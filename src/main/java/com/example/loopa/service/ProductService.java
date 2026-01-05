@@ -17,7 +17,9 @@ import com.example.loopa.repository.ProductRepository;
 import com.example.loopa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,8 +94,15 @@ public class ProductService {
         double min = minPrice != null ? minPrice : 0.0;
         double max = maxPrice != null ? maxPrice : Double.MAX_VALUE;
 
+        Sort premiumSort = Sort.by(Sort.Direction.DESC, "seller.isPremium");
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                premiumSort.and(pageable.getSort())
+        );
+
         Page<ProductViewResponse> products = productRepository
-                .search(query,category, min, max, pageable)
+                .search(query, category, min, max, sortedPageable)
                 .map(this::mapToViewResponse);
 
         return ApiResponse.success(null, PageableRes.fromPage(products));
@@ -117,6 +126,25 @@ public class ProductService {
 
         return ApiResponse.success(null, PageableRes.fromPage(productPage));
     }
+
+    //Premium sellerlar uchun metodlar
+
+    public ApiResponse<PageableRes<ProductViewResponse>> getPremiumProducts(Pageable pageable) {
+        Sort premiumSort = Sort.by(Sort.Order.desc("createdAt"));
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                premiumSort
+        );
+
+        Page<ProductViewResponse> products = productRepository
+                .findAllBySeller_PremiumTrue(sortedPageable)
+                .map(this::mapToViewResponse);
+
+        return ApiResponse.success(null, PageableRes.fromPage(products));
+    }
+
+    //mapperlar
 
     public ProductViewResponse mapToViewResponse(Product product){
         return ProductViewResponse.builder()

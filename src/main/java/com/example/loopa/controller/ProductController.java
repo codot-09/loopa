@@ -1,5 +1,6 @@
 package com.example.loopa.controller;
 
+import com.example.loopa.annotation.CheckBlocked;
 import com.example.loopa.dto.ApiResponse;
 import com.example.loopa.dto.PageableRes;
 import com.example.loopa.dto.request.ProductCreateRequest;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -27,6 +27,7 @@ public class ProductController {
 
     private final ProductService productService;
 
+    @CheckBlocked
     @PostMapping("/new-product")
     public ResponseEntity<ApiResponse<String>> createProduct(
             @AuthenticationPrincipal User seller,
@@ -35,6 +36,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.createProduct(seller, request));
     }
 
+    @CheckBlocked
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteProduct(@PathVariable UUID id){
         return ResponseEntity.ok(productService.deleteProduct(id));
@@ -73,5 +75,16 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ProductResponse>> getById(@AuthenticationPrincipal User user,@PathVariable UUID id){
         return ResponseEntity.ok(productService.getById(user,id));
+    }
+
+    //premiumlar uchun
+
+    @GetMapping("/premium")
+    public ResponseEntity<ApiResponse<PageableRes<ProductViewResponse>>> getPremiumProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        Pageable pageable = PageRequest.of(page,size);
+        return ResponseEntity.ok(productService.getPremiumProducts(pageable));
     }
 }

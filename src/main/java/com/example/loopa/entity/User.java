@@ -43,6 +43,8 @@ public class User implements UserDetails {
 
     private LocalDateTime lastLogin;
 
+    private boolean premium;
+
     @Builder.Default
     private boolean isBlocked = false;
 

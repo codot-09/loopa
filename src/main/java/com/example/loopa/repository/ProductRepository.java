@@ -54,4 +54,6 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     @Query("SELECT p.seller FROM Product p WHERE p.seller.role = 'SELLER' GROUP BY p.seller ORDER BY COUNT(p) DESC")
     List<User> findTopSellers(Pageable pageable);
+
+    Page<Product> findAllBySeller_PremiumTrue(Pageable pageable);
 }
