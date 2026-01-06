@@ -24,8 +24,6 @@ public class Banner {
     @OneToOne
     private User seller;
 
-    private String title;
-
     private String coverImage;
 
     private LocalDate expireDate;

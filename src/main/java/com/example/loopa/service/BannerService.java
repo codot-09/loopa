@@ -25,7 +25,6 @@ public class BannerService {
 
         Banner banner = Banner.builder()
                 .seller(user)
-                .title(request.getTitle())
                 .coverImage(request.getCoverImage())
                 .build();
 
@@ -57,7 +56,7 @@ public class BannerService {
 
     private BannerDTO mapToDto(Banner banner){
         return BannerDTO.builder()
-                .title(banner.getTitle())
+                .id(banner.getId())
                 .coverImage(banner.getCoverImage())
                 .build();
     }
