@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,4 +57,14 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     List<User> findTopSellers(Pageable pageable);
 
     Page<Product> findAllBySeller_PremiumTrue(Pageable pageable);
+
+    @Query("SELECT p.price FROM Product p WHERE p.category = :category")
+    List<Double> findAllPricesByCategory(@Param("category") Category category);
+
+    long countBySellerAndCategory(User seller, Category category);
+
+    @Query("SELECT COUNT(DISTINCT p.seller) FROM Product p WHERE p.category = :category")
+    long countSellersByCategory(@Param("category") Category category);
+
+    List<Product> findTop5ByCategoryOrderByRecommendedCountDesc(Category category);
 }

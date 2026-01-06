@@ -1,11 +1,13 @@
 package com.example.loopa.service;
 
 import com.example.loopa.dto.ApiResponse;
+import com.example.loopa.dto.CompetitiveAnalysis;
 import com.example.loopa.dto.response.AdminStatistics;
 import com.example.loopa.dto.response.ProductViewResponse;
 import com.example.loopa.dto.response.SellerStatistics;
 import com.example.loopa.dto.response.UserResponse;
 import com.example.loopa.entity.User;
+import com.example.loopa.entity.enums.Category;
 import com.example.loopa.entity.enums.PaymentStatus;
 import com.example.loopa.entity.enums.Role;
 import com.example.loopa.repository.*;
@@ -103,5 +105,37 @@ public class StatisticService {
                 .build();
 
         return ApiResponse.success(null,stats);
+    }
+
+    public ApiResponse<List<CompetitiveAnalysis>> getCompetitiveAnalysis(User currentUser) {
+        List<Category> myCategories = productRepository.findCategoriesBySellerId(currentUser.getChatId());
+
+        List<CompetitiveAnalysis> analysisList = myCategories.stream().map(category -> {
+            List<Double> prices = productRepository.findAllPricesByCategory(category);
+            long totalProducts = prices.size();
+
+            double avgPrice = totalProducts > 0
+                    ? prices.stream().mapToDouble(v -> v).average().orElse(0.0)
+                    : 0.0;
+
+            long myProductsCount = productRepository.countBySellerAndCategory(currentUser, category);
+            long totalSellers = productRepository.countSellersByCategory(category);
+
+            return CompetitiveAnalysis.builder()
+                    .categoryName(category.name())
+                    .totalCompetitors(totalSellers)
+                    .totalProductsInCategory(totalProducts)
+                    .averagePrice(Math.round(avgPrice * 100.0) / 100.0)
+                    .minPrice(prices.stream().mapToDouble(v -> v).min().orElse(0.0))
+                    .maxPrice(prices.stream().mapToDouble(v -> v).max().orElse(0.0))
+                    .marketShare(totalProducts > 0 ? Math.round(((double) myProductsCount / totalProducts) * 1000.0) / 10.0 : 0.0)
+                    .topViewedProducts(productRepository.findTop5ByCategoryOrderByRecommendedCountDesc(category)
+                            .stream()
+                            .map(productService::mapToViewResponse)
+                            .toList())
+                    .build();
+        }).toList();
+
+        return ApiResponse.success(null, analysisList);
     }
 }
