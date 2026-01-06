@@ -24,10 +24,10 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
 
     long countByStatus(PaymentStatus status);
 
-    @Query("SELECT SUM(p.amount) FROM Payment p WHERE p.status = :status")
+    @Query("SELECT SUM(p.price) FROM Payment p WHERE p.status = :status")
     BigDecimal sumAmountByStatus(@Param("status") PaymentStatus status);
 
     // Agar tushumni vaqt bo'yicha filter qilmoqchi bo'lsangiz
-    @Query("SELECT SUM(p.amount) FROM Payment p WHERE p.status = :status AND p.paymentDate > :after")
+    @Query("SELECT SUM(p.price) FROM Payment p WHERE p.status = :status AND p.paymentDate > :after")
     BigDecimal sumAmountByStatusAndDateAfter(@Param("status") PaymentStatus status, @Param("after") LocalDateTime after);
 }
