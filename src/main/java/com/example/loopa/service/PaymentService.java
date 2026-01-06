@@ -9,12 +9,14 @@ import com.example.loopa.entity.enums.PaymentStatus;
 import com.example.loopa.exception.DataNotFoundException;
 import com.example.loopa.repository.PaymentRepository;
 import com.example.loopa.repository.SubscriptionRepository;
+import com.example.loopa.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,6 +26,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionService subscriptionService;
+    private final UserRepository userRepository;
 
     public ApiResponse<String> createPayment(User user,String billingUrl){
         Payment payment = Payment.builder()
@@ -55,6 +58,15 @@ public class PaymentService {
         }
 
         return ApiResponse.success("To'lov tasdiqlandi");
+    }
+
+    public ApiResponse<List<PaymentResponse>> getByUser(String id){
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Foydalanuvchi topilmadi"));
+
+        List<PaymentResponse> paymentResponses = paymentRepository.findByUser(user).stream().map(this::mapToResponse).toList();
+        return ApiResponse.success(null,paymentResponses);
     }
 
     private PaymentResponse mapToResponse(Payment payment){

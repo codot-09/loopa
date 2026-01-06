@@ -4,6 +4,7 @@ import com.example.loopa.dto.ApiResponse;
 import com.example.loopa.dto.BannerDTO;
 import com.example.loopa.entity.User;
 import com.example.loopa.service.BannerService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/banners")
 @RequiredArgsConstructor
+@Tag(name = "Bannerlar",description = "Bannerlarni boshqarish")
 public class BannerController {
 
     private final BannerService bannerService;

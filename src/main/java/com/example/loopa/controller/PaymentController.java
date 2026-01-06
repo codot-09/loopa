@@ -6,6 +6,7 @@ import com.example.loopa.dto.response.PaymentResponse;
 import com.example.loopa.entity.User;
 import com.example.loopa.entity.enums.PaymentStatus;
 import com.example.loopa.service.PaymentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,11 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/payment")
 @RequiredArgsConstructor
+@Tag(name = "To'lovlar",description = "To'lovlarni boshqarish")
 public class PaymentController {
 
     private final PaymentService paymentService;
@@ -38,6 +41,11 @@ public class PaymentController {
     ){
         Pageable pageable = PageRequest.of(page,size);
         return ResponseEntity.ok(paymentService.getPayments(status,pageable));
+    }
+
+    @GetMapping("/history/{id}")
+    public ResponseEntity<ApiResponse<List<PaymentResponse>>> getByUser(@PathVariable String id){
+        return ResponseEntity.ok(paymentService.getByUser(id));
     }
 
     @PatchMapping("/approve/{id}")

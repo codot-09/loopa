@@ -12,4 +12,5 @@ public class UserResponse {
     private String chatId;
     private String username;
     private String role;
+    private boolean premium;
 }

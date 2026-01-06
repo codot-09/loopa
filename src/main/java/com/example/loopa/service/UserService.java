@@ -3,7 +3,6 @@ package com.example.loopa.service;
 import com.example.loopa.dto.ApiResponse;
 import com.example.loopa.dto.PageableRes;
 import com.example.loopa.dto.request.LoginRequest;
-import com.example.loopa.dto.request.SellerRequest;
 import com.example.loopa.dto.response.LoginResponse;
 import com.example.loopa.dto.response.UserResponse;
 import com.example.loopa.entity.User;
@@ -17,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -110,7 +108,8 @@ public class UserService {
         return new UserResponse(
                 user.getChatId(),
                 user.getTgUsername(),
-                user.getRole().name()
+                user.getRole().name(),
+                user.isPremium()
         );
     }
 }
