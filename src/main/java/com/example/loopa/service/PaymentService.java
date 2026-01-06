@@ -74,6 +74,7 @@ public class PaymentService {
                 .id(payment.getId())
                 .billingUrl(payment.getBillingUrl())
                 .status(payment.getStatus())
+                .userContact(payment.getUser().getPhone())
                 .paymentDate(payment.getPaymentDate())
                 .build();
     }
