@@ -10,6 +10,7 @@ import com.example.loopa.exception.DataNotFoundException;
 import com.example.loopa.repository.PaymentRepository;
 import com.example.loopa.repository.SubscriptionRepository;
 import com.example.loopa.repository.UserRepository;
+import com.example.loopa.service.bot.BotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ public class PaymentService {
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionService subscriptionService;
     private final UserRepository userRepository;
+    private final BotService botService;
 
     public ApiResponse<String> createPayment(User user,String billingUrl){
         Payment payment = Payment.builder()
@@ -56,6 +58,16 @@ public class PaymentService {
         if (approved){
             subscriptionService.updateSubscription(payment.getUser());
         }
+
+        String message = "✨ **Tabriklaymiz, PRO-status faollashtirildi!**\n\n" +
+                "Hurmatli sotuvchi, Loopa platformasining barcha professional imkoniyatlaridan foydalanish huquqiga ega bo'ldingiz. Endi mahsulotlaringiz qidiruv natijalarida yuqori o'rinlarda ko'rinadi va sizga maxsus **PRO** badge berildi.\n\n" +
+                "🚀 **Yangi imkoniyatlaringiz:**\n" +
+                "• Bozor tahlili va raqobatchilar analitikasi\n" +
+                "• Reklama bannerlarini joylashtirish huquqi\n" +
+                "• Mijozlar ishonchi va yuqori konversiya\n\n" +
+                "Bizni tanlaganingiz uchun tashakkur! Savdolaringiz barakali bo'lishini tilaymiz.";
+
+        botService.sendMessage(Long.valueOf(payment.getUser().getChatId()), message);
 
         return ApiResponse.success("To'lov tasdiqlandi");
     }
