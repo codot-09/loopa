@@ -6,13 +6,15 @@ import com.example.loopa.dto.response.ProductViewResponse;
 import com.example.loopa.dto.response.SellerStatistics;
 import com.example.loopa.dto.response.UserResponse;
 import com.example.loopa.entity.User;
+import com.example.loopa.entity.enums.PaymentStatus;
 import com.example.loopa.entity.enums.Role;
-import com.example.loopa.repository.ProductRepository;
-import com.example.loopa.repository.RequestRepository;
-import com.example.loopa.repository.UserRepository;
+import com.example.loopa.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,44 +28,56 @@ public class StatisticService {
     private final RequestRepository requestRepository;
     private final UserService userService;
     private final ProductService productService;
+    private final PaymentRepository paymentRepository;
+    private final BannerRepository bannerRepository;
 
     public ApiResponse<AdminStatistics> adminStatistics() {
         long usersCount = userRepository.count();
         long sellerCount = userRepository.countByRole(Role.SELLER);
-        long clientCount = usersCount - sellerCount;
         long productCount = productRepository.count();
         long requestCount = requestRepository.count();
+        long premiumUsersCount = userRepository.countByPremiumTrue();
+        long bannerCount = bannerRepository.count();
+
+        BigDecimal totalRevenue = paymentRepository.sumAmountByStatus(PaymentStatus.PAID);
+        if (totalRevenue == null) totalRevenue = BigDecimal.ZERO;
+
+        long totalPaymentsCount = paymentRepository.countByStatus(PaymentStatus.PAID);
+        long pendingPaymentsCount = paymentRepository.countByStatus(PaymentStatus.PENDING);
 
         List<UserResponse> topSellers = productRepository.findTopSellers(PageRequest.of(0, 5))
                 .stream()
                 .map(userService::mapToResponse)
                 .toList();
 
-        LocalDateTime startOfCurrentMonth = LocalDate.now().withDayOfMonth(1).atStartOfDay();
-        long currentMonthUsers = userRepository.countByCreatedAtAfter(startOfCurrentMonth);
-        long previousMonthUsers = userRepository.countByCreatedAtBetween(
-                startOfCurrentMonth.minusMonths(1),
-                startOfCurrentMonth
-        );
+        LocalDateTime startOfMonth = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+        long currentMonthUsers = userRepository.countByCreatedAtAfter(startOfMonth);
+        long prevMonthUsers = userRepository.countByCreatedAtBetween(startOfMonth.minusMonths(1), startOfMonth);
 
-        double increasePercentage = 0.0;
-        if (previousMonthUsers > 0) {
-            increasePercentage = ((double) (currentMonthUsers - previousMonthUsers) / previousMonthUsers) * 100;
-        } else if (currentMonthUsers > 0) {
-            increasePercentage = 100.0;
-        }
+        double increasePercentage = prevMonthUsers > 0
+                ? ((double) (currentMonthUsers - prevMonthUsers) / prevMonthUsers) * 100
+                : (currentMonthUsers > 0 ? 100.0 : 0.0);
+
+        BigDecimal averageCheck = totalPaymentsCount > 0
+                ? totalRevenue.divide(BigDecimal.valueOf(totalPaymentsCount), 2, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
 
         AdminStatistics stats = AdminStatistics.builder()
                 .usersCount(usersCount)
-                .clientCount(clientCount)
+                .clientCount(usersCount - sellerCount)
                 .sellerCount(sellerCount)
                 .productCount(productCount)
                 .requestCount(requestCount)
+                .premiumUsersCount(premiumUsersCount)
+                .totalBannersCount(bannerCount)
+                .totalRevenue(totalRevenue)
+                .totalPaymentsCount(totalPaymentsCount)
+                .pendingPaymentsCount(pendingPaymentsCount)
                 .topSellers(topSellers)
                 .increasePercentage(Math.round(increasePercentage * 100.0) / 100.0)
                 .build();
 
-        return ApiResponse.success(null,stats);
+        return ApiResponse.success(null, stats);
     }
 
     public ApiResponse<SellerStatistics> getSellerStatistics(User currentUser) {

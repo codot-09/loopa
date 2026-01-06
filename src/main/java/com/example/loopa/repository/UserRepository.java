@@ -33,4 +33,6 @@ public interface UserRepository extends JpaRepository<User,String> {
 
     List<User> findAllByLastLoginBefore(LocalDateTime date);
 
+    long countByPremiumTrue();
+
 }
