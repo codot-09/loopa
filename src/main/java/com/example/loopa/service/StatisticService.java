@@ -39,11 +39,11 @@ public class StatisticService {
         long premiumUsersCount = userRepository.countByPremiumTrue();
         long bannerCount = bannerRepository.count();
 
-        BigDecimal totalRevenue = paymentRepository.sumAmountByStatus(PaymentStatus.PAID);
-        if (totalRevenue == null) totalRevenue = BigDecimal.ZERO;
-
         long totalPaymentsCount = paymentRepository.countByStatus(PaymentStatus.PAID);
         long pendingPaymentsCount = paymentRepository.countByStatus(PaymentStatus.PENDING);
+
+        BigDecimal pricePerPremium = new BigDecimal("20000");
+        BigDecimal totalRevenue = pricePerPremium.multiply(BigDecimal.valueOf(totalPaymentsCount));
 
         List<UserResponse> topSellers = productRepository.findTopSellers(PageRequest.of(0, 5))
                 .stream()
@@ -57,10 +57,6 @@ public class StatisticService {
         double increasePercentage = prevMonthUsers > 0
                 ? ((double) (currentMonthUsers - prevMonthUsers) / prevMonthUsers) * 100
                 : (currentMonthUsers > 0 ? 100.0 : 0.0);
-
-        BigDecimal averageCheck = totalPaymentsCount > 0
-                ? totalRevenue.divide(BigDecimal.valueOf(totalPaymentsCount), 2, RoundingMode.HALF_UP)
-                : BigDecimal.ZERO;
 
         AdminStatistics stats = AdminStatistics.builder()
                 .usersCount(usersCount)
