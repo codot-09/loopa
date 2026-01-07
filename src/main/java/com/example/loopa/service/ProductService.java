@@ -165,7 +165,7 @@ public class ProductService {
                 .deliveryType(product.getDeliveryType())
                 .category(product.getCategory())
                 .locationResponse(locationService.mapToResponse(product.getLocation()))
-                .sellerContact(product.getSeller().getUsername())
+                .sellerContact(product.getSeller().getTgUsername())
                 .phone(user.getPhone())
                 .medias(product.getMedias())
                 .createdAt(product.getCreatedAt())
