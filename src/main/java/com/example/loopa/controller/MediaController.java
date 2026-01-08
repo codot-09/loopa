@@ -1,11 +1,13 @@
 package com.example.loopa.controller;
 
+import com.example.loopa.entity.User;
 import com.example.loopa.service.MediaService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,9 +20,9 @@ public class MediaController {
     private final MediaService mediaService;
 
     @PostMapping(value = "/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> upload(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file) {
         try {
-            String url = mediaService.uploadFile(file);
+            String url = mediaService.uploadFile(user.getUsername(),file);
             return ResponseEntity.ok(url);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
